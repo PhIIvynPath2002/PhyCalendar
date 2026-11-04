@@ -49,8 +49,9 @@ jobs:
         run: sh scripts/build-ios.sh
       - name: Package iOS outputs with explicit limitations
         run: |
-          ditto -c -k --sequesterRsrc --keepParent release/ios-simulator/Build/Products/Debug-iphonesimulator/App.app release/PhyCalendar-2.0.0-iOS-SIMULATOR-ONLY.zip
-          ditto -c -k --sequesterRsrc --keepParent release/ios-device/Build/Products/Release-iphoneos/App.app release/PhyCalendar-2.0.0-iOS-UNSIGNED-NOT-INSTALLABLE.zip
+          VERSION=$(node -p "require('./package.json').version")
+          ditto -c -k --sequesterRsrc --keepParent release/ios-simulator/Build/Products/Debug-iphonesimulator/App.app release/PhyCalendar-${VERSION}-iOS-SIMULATOR-ONLY.zip
+          ditto -c -k --sequesterRsrc --keepParent release/ios-device/Build/Products/Release-iphoneos/App.app release/PhyCalendar-${VERSION}-iOS-UNSIGNED-NOT-INSTALLABLE.zip
           cp docs/INSTALL-zh.md release/安装说明.md
       - uses: actions/upload-artifact@v4
         with:
@@ -77,4 +78,4 @@ jobs:
         run: |
           cd release
           sha256sum *.zip *.dmg > SHA256SUMS.txt
-          gh release create "$GITHUB_REF_NAME" *.zip *.dmg 安装说明.md SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --verify-tag --title "个人订阅日历 $GITHUB_REF_NAME · 本地免登录版" --notes-file ../docs/RELEASE-v2.0.0.md
+          gh release create "$GITHUB_REF_NAME" *.zip *.dmg 安装说明.md SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --verify-tag --title "个人订阅日历 $GITHUB_REF_NAME · 本地免登录版" --notes-file "../docs/RELEASE-${GITHUB_REF_NAME}.md"

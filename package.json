@@ -1,7 +1,7 @@
 {
   "name": "phycalendar",
   "productName": "PhyCalendar",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "免登录、离线本地保存的个人订阅日历",
   "license": "MIT",
   "private": true,

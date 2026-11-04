@@ -8,14 +8,37 @@
 4. 如不愿允许未公证包，可自行在 Mac 构建运行。正式对外无警告分发通常需付费 Developer ID 证书和公证，未配置时本项目不声称已完成。
 5. 更新前导出 JSON；用同一 App 替换旧 App，保留 `~/Library/Application Support/PhyCalendar`，不要卸载清理数据。不自动更新或同步。
 
-如果没有现成原生包，在 Mac 安装 Node.js 24，解压 **source.zip**，在含 package.json 的文件夹打开终端：
+## Mac：从源码构建（先选对文件夹）
 
-```sh
-npm ci
-npm run desktop
-```
+截图中的 `ENOENT ... /Users/你的用户名/package.json` 表示当前还在用户主目录 `~`；不是要求你在主目录创建 package.json，也不应在那里运行 npm install。
 
-构建可双击的程序：`npm run dist:mac`，输出在 `release`。程序安装后关闭终端不影响后续使用。直接双击 `public/index.html` 不属于支持的启动方式。
+### 推荐：构建助手
+
+1. 安装 Node.js 24。下载 **source 源码 ZIP** 并完整解压；PWA.zip 和 1.0 旧包不适用。
+2. 打开解压后的项目文件夹，确认同时存在 **package.json、package-lock.json、构建Mac应用.command**。
+3. 双击 **构建Mac应用.command**。它会自动进入正确文件夹，检查环境、执行 npm ci，成功后才继续构建。首次需联网下载依赖，等待完成。
+4. 如系统阻止脚本启动，可使用下面的终端方法，不要全局关闭系统安全设置。也可在终端输入 `bash `（末尾一个空格），把该脚本拖进去，回车运行。
+5. 成功后自动打开 release 文件夹，Apple 芯片选择 arm64，Intel 选择 x64，按前文安装 .app。它是构建助手，不是已构建的安装包；Mac 完整构建仍需在你的设备验证。
+
+### 终端操作（现有 2.0.0 包也适用）
+
+1. 打开终端，先只输入 `cd `，末尾保留一个空格，**先不要回车**。
+2. 从 Finder 把“里面有 package.json 的项目文件夹”拖进终端，再按回车。拖的是文件夹，不是 ZIP、public 文件夹或 package.json 文件。
+3. 逐行运行以下检查：
+
+   ```sh
+   pwd
+   ls package.json package-lock.json
+   ```
+
+   `pwd` 应为刚解压的项目目录，不应只显示 `/Users/你的用户名`。`ls` 必须列出这两个文件，缺任何一个都先停止：可能选错文件夹或下载了旧版本。官方源码 ZIP 已包含锁文件，不要改用 npm install 掩盖路径错误。
+4. 安装依赖成功后再构建：
+
+   ```sh
+   npm ci && npm run dist:mac
+   ```
+
+   `&&` 确保前一步失败就不继续。只想先预览独立窗口可用 `npm ci && npm run desktop`（此开发运行方式仍依赖终端）。正式构建产物在 release；安装后启动 App 无需终端。直接双击 public/index.html 不受支持。
 
 ## iPhone 17：两种实际可行的方案
 
@@ -24,12 +47,10 @@ npm run desktop
 准备：Mac、支持你的 iPhone 系统的 Xcode（Capacitor 8 要求 Xcode 26+）、Node.js 24、USB 数据线、一个 Apple 账号。普通 Apple 账号通常可免费用于 Xcode 的 Personal Team，不必先购买会员。
 
 1. 从 Mac App Store 安装/更新 Xcode，首次打开接受许可、安装 iOS 组件。Xcode → Settings → Accounts 加入你自己的 Apple 账号。不要把密码发给项目作者。
-2. 解压源码，在项目文件夹终端执行：
+2. 解压源码，按上面的“终端操作”先进入含 package.json 和 package-lock.json 的项目文件夹，检查两个文件都在，再执行：
 
    ```sh
-   npm ci
-   npm run ios:sync
-   npm run ios:open
+   npm ci && npm run ios:sync && npm run ios:open
    ```
 
 3. Xcode 选择 **App target → Signing & Capabilities**，开启 Automatically manage signing，Team 选自己的 Personal Team。把 Bundle Identifier 改成唯一值，例如 `com.你的英文别名.phycalendar`；设置一次后更新时保持相同，否则会视作新 App、不会继承数据。提交公共源码时不要把你的团队 ID、证书或个人配置推回去。
