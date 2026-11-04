@@ -45,7 +45,7 @@ npm run dist:mac      # 在 Mac 构建 arm64 / x64 ZIP 与 DMG
 npm run ios:sync      # 生成网页并同步到已提交的 iOS 工程
 npm run ios:open      # 在 Mac 打开 Xcode
 sh scripts/build-ios.sh # 在 Mac 编译模拟器和未签名设备工程，仅做构建验证
-npm run package:source # 从当前 Git HEAD 导出已审查源码与 PWA 包
+npm run package:source # 从当前 Git HEAD 导出已审查源码与 PWA 包（需 Git 工作副本）
 ```
 
 `ios/App/App.xcodeproj` 已生成并提交，SPM 依赖版本锁定在工程与 npm 锁文件。`ios:sync` 会更新生成资源，不会读取或打包用户记录。`docs/ci/build.yml.example` 提供待手动启用的测试、网页打包、Mac 安装包、iOS 编译与 Release 工作流；发布任务仅在所有必需构建成功后执行。先将模板复制为 `.github/workflows/build.yml` 并提交后，推送 `v2.*` 标签可触发发布；本次按你的选择仅交付本地工程，未启用 CI。无签名证书也能编译验证，但不生成可安装的真机 IPA。
