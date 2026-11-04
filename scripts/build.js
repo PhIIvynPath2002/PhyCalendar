@@ -1,0 +1,16 @@
+import {build} from 'esbuild';
+import {cp,mkdir,readFile,writeFile,rm} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+await rm('dist',{recursive:true,force:true});await mkdir('dist');
+await cp('public','dist',{recursive:true});
+await build({entryPoints:['public/app.js'],bundle:true,format:'esm',target:['safari17','chrome120'],outfile:'dist/app.js',minify:false});
+for(const name of ['storage.js','model.js','core.js'])await rm('dist/'+name,{force:true});
+const files=['index.html','app.js','style.css','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png','apple-touch-icon.png'];
+const hash=createHash('sha256');for(const f of files)hash.update(await readFile('dist/'+f));
+const cache='phycalendar-shell-'+hash.digest('hex').slice(0,16);
+await writeFile('dist/sw.js',`const CACHE=${JSON.stringify(cache)},FILES=${JSON.stringify(files)};
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));
+self.addEventListener('activate',e=>e.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('phycalendar-shell-')&&key!==CACHE)await caches.delete(key);await self.clients.claim();})()));
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const url=new URL(e.request.url);if(url.origin!==self.location.origin)return;e.respondWith((async()=>{const c=await caches.open(CACHE);if(e.request.mode==='navigate')return await c.match('index.html')||fetch(e.request);return await c.match(e.request)||fetch(e.request);})());});
+`);
+console.log('Built offline web assets:',cache);

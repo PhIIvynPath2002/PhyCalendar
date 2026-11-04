@@ -1,0 +1,38 @@
+{
+  "name": "phycalendar",
+  "productName": "PhyCalendar",
+  "version": "2.0.0",
+  "description": "免登录、离线本地保存的个人订阅日历",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "desktop/main.cjs",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "start": "npm run build && node server.js",
+    "test": "node --test test/*.test.js",
+    "desktop": "npm run build && electron .",
+    "dist:mac": "npm run build && electron-builder --mac --publish never",
+    "ios:sync": "npm run build && cap sync ios",
+    "ios:open": "cap open ios",
+    "package:source": "node scripts/package-source.js",
+    "test:browser": "node scripts/browser-check.js"
+  },
+  "dependencies": {
+    "@capacitor/core": "8.6.0",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/preferences": "8.0.1",
+    "@capacitor/share": "8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.0",
+    "@capacitor/ios": "8.6.0",
+    "electron": "45.2.2",
+    "electron-builder": "26.18.0",
+    "esbuild": "0.28.2",
+    "playwright": "1.56.1"
+  }
+}
